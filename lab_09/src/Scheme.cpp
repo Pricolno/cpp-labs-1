@@ -16,7 +16,7 @@ void Scheme::push_back_figure(Figure *fg) {
     figures.emplace_back(fg);
 }
 
-void Scheme::print_all_figures() {
+void Scheme::print_all_figures() const {
     for (const auto &fg : figures)
         fg->print();
 }
@@ -43,7 +43,7 @@ void Scheme::zoom_figure(int id, int factor) {
         (*it)->zoom(factor);
 }
 
-Figure *Scheme::is_inside_figure(int x, int y) {
+Figure *Scheme::is_inside_figure(int x, int y) const {
     for (const auto &fg : figures)
         if (fg->is_inside(x, y))
             return fg.get();

@@ -11,8 +11,8 @@ void Rectangle::print() const {
 }
 
 bool Rectangle::is_inside(int x_, int y_) const {
-    int dx = x - x_;
-    int dy = y - y_;
+    int dx = std::abs(x - x_);
+    int dy = std::abs(y - y_);
     return 2 * dx <= width && 2 * dy <= height;
 }
 

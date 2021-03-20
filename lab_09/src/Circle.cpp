@@ -13,7 +13,7 @@ void Circle::print() const {
 bool Circle::is_inside(int x_, int y_) const {
     int dx = std::abs(x - x_);
     int dy = std::abs(y - y_);
-    return dx * dx + dy * dy <= radius;
+    return dx * dx + dy * dy <= radius * radius;
 }
 
 void Circle::zoom(int factor) {
