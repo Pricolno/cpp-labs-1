@@ -9,7 +9,7 @@ static void handle_add() {
     int type;
     std::cin >> type;
 
-    std::unique_ptr<Employee> emp = createEmployee(type);
+    std::unique_ptr<Employee> emp = EmployeeFactory::create(type);
     if (!emp) return;
 
     std::cin >> *emp;

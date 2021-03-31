@@ -18,10 +18,13 @@ public:
     virtual ~Employee() = default;
 
 protected:
-    virtual void write_txt_to(std::ostream &out) const = 0;
-    virtual void read_txt_from(std::istream &in) = 0;
-    virtual void write_bin_to(std::ofstream &out) const = 0;
-    virtual void read_bin_from(std::ifstream &in) = 0;
+    virtual void write_txt_to(std::ostream &out) const;
+    virtual void read_txt_from(std::istream &in);
+    virtual void write_bin_to(std::ofstream &out) const;
+    virtual void read_bin_from(std::ifstream &in);
+
+    virtual int getIntType() const = 0;
+    virtual std::string getStrType() const = 0;
 
     std::string _name;
     int _base_salary = 0;
@@ -29,17 +32,16 @@ protected:
 
 class Developer : public Employee {
 public:
-    int salary() const override {
-        int salary = _base_salary;
-        if (_has_bonus) { salary += 1000; }
-        return salary;
-    }
+    int salary() const override;
 
 protected:
     void write_txt_to(std::ostream &out) const override;
     void read_txt_from(std::istream &in) override;
     void write_bin_to(std::ofstream &out) const override;
     void read_bin_from(std::ifstream &in) override;
+
+    int getIntType() const override;
+    std::string getStrType() const override;
 
 private:
     bool _has_bonus = false;
@@ -47,9 +49,7 @@ private:
 
 class SalesManager : public Employee {
 public:
-    int salary() const override {
-        return _base_salary + _sold_nm * _price / 100;
-    }
+    int salary() const override;
 
 protected:
     void write_txt_to(std::ostream &out) const override;
@@ -57,16 +57,17 @@ protected:
     void write_bin_to(std::ofstream &out) const override;
     void read_bin_from(std::ifstream &in) override;
 
+    int getIntType() const override;
+    std::string getStrType() const override;
+
 private:
     int _sold_nm = 0, _price = 0;
 };
 
-enum EmpType {
-    DEV = 1,
-    MANAGER = 2
+class EmployeeFactory {
+public:
+    static std::unique_ptr<Employee> create(int type);
 };
-
-std::unique_ptr<Employee> createEmployee(int type);
 
 class EmployeesArray {
 public:

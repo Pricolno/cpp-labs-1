@@ -20,6 +20,27 @@ std::ostream &operator<<(std::ofstream &out, const Employee &emp) {
     return out;
 }
 
+enum EmpType {
+    DEV = 1,
+    MANAGER = 2
+};
+
+int Developer::getIntType() const {
+    return EmpType::DEV;
+}
+
+int SalesManager::getIntType() const {
+    return EmpType::MANAGER;
+}
+
+std::string Developer::getStrType() const {
+    return "Developer";
+}
+
+std::string SalesManager::getStrType() const {
+    return "Sales Manager";
+}
+
 void EmployeesArray::add(std::unique_ptr<Employee> e) {
     _employees.emplace_back(std::move(e));
 }
@@ -31,25 +52,43 @@ int EmployeesArray::total_salary() const {
     return total;
 }
 
+int Developer::salary() const {
+    int salary = _base_salary;
+    if (_has_bonus) { salary += 1000; }
+    return salary;
+}
+
+int SalesManager::salary() const {
+    return _base_salary + _sold_nm * _price / 100;
+}
+
+void Employee::read_txt_from(std::istream &in) {
+    in >> _name >> _base_salary;
+}
+
+void Employee::write_txt_to(std::ostream &out) const {
+    out << getStrType() << std::endl;
+    out << "Name: " << _name << std::endl;
+    out << "Base Salary: " << _base_salary << std::endl;
+}
+
 void Developer::read_txt_from(std::istream &in) {
-    in >> _name >> _base_salary >> _has_bonus;
+    Employee::read_txt_from(in);
+    in >> _has_bonus;
 }
 
 void Developer::write_txt_to(std::ostream &out) const {
-    out << "Developer" << std::endl;
-    out << "Name: " << _name << std::endl;
-    out << "Base Salary: " << _base_salary << std::endl;
+    Employee::write_txt_to(out);
     out << "Has bonus: " << (_has_bonus ? "+" : "-") << std::endl;
 }
 
 void SalesManager::read_txt_from(std::istream &in) {
-    in >> _name >> _base_salary >> _sold_nm >> _price;
+    Employee::read_txt_from(in);
+    in >> _sold_nm >> _price;
 }
 
 void SalesManager::write_txt_to(std::ostream &out) const {
-    out << "Sales Manager" << std::endl;
-    out << "Name: " << _name << std::endl;
-    out << "Base Salary: " << _base_salary << std::endl;
+    Employee::write_txt_to(out);
     out << "Sold items: " << _sold_nm << std::endl;
     out << "Item price: " << _price << std::endl;
 }
@@ -60,7 +99,7 @@ std::ostream &operator<<(std::ostream &out, const EmployeesArray &arr) {
         out << i + 1 << ". ";
         out << *emp;
     }
-    out << "== Total salary: " << arr.total_salary() << std::endl;
+    out << "== Total salary: " << arr.total_salary() << std::endl << std::endl;
     return out;
 }
 
@@ -76,34 +115,37 @@ static void write_c_str(std::ofstream &out, const std::string &str) {
     out.write(str.c_str(), str.size() + 1);
 }
 
-void Developer::write_bin_to(std::ofstream &out) const {
-    int type = EmpType::DEV;
+void Employee::write_bin_to(std::ofstream &out) const {
+    int type = getIntType();
     out.write((const char *) &type, sizeof(int32_t));
 
     write_c_str(out, _name);
     out.write((const char *) &_base_salary, sizeof(int32_t));
+}
+
+void Employee::read_bin_from(std::ifstream &in) {
+    _name = read_c_str(in);
+    in.read((char *) &_base_salary, sizeof(int32_t));
+}
+
+void Developer::write_bin_to(std::ofstream &out) const {
+    Employee::write_bin_to(out);
     out.write((const char *) &_has_bonus, sizeof(bool));
 }
 
 void Developer::read_bin_from(std::ifstream &in) {
-    _name = read_c_str(in);
-    in.read((char *) &_base_salary, sizeof(int32_t));
+    Employee::read_bin_from(in);
     in.read((char *) &_has_bonus, sizeof(bool));
 }
 
 void SalesManager::write_bin_to(std::ofstream &out) const {
-    int type = EmpType::MANAGER;
-    out.write((const char *) &type, sizeof(int32_t));
-
-    write_c_str(out, _name);
-    out.write((const char *) &_base_salary, sizeof(int32_t));
+    Employee::write_bin_to(out);
     out.write((const char *) &_sold_nm, sizeof(int32_t));
     out.write((const char *) &_price, sizeof(int32_t));
 }
 
 void SalesManager::read_bin_from(std::ifstream &in) {
-    _name = read_c_str(in);
-    in.read((char *) &_base_salary, sizeof(int32_t));
+    Employee::read_bin_from(in);
     in.read((char *) &_sold_nm, sizeof(int32_t));
     in.read((char *) &_price, sizeof(int32_t));
 }
@@ -123,7 +165,7 @@ std::istream &operator>>(std::ifstream &in, EmployeesArray &arr) {
         int32_t type;
         in.read((char *) &type, sizeof(int32_t));
 
-        std::unique_ptr<Employee> emp = createEmployee(type);
+        std::unique_ptr<Employee> emp = EmployeeFactory::create(type);
         if (!emp) continue;
 
         in >> *emp;
@@ -132,7 +174,7 @@ std::istream &operator>>(std::ifstream &in, EmployeesArray &arr) {
     return in;
 }
 
-std::unique_ptr<Employee> createEmployee(int type) {
+std::unique_ptr<Employee> EmployeeFactory::create(int type) {
     if (type == EmpType::DEV)
         return std::make_unique<Developer>();
     else if (type == EmpType::MANAGER)
