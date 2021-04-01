@@ -1,8 +1,8 @@
 #ifndef LAB_11_MY_VECTOR_H
 #define LAB_11_MY_VECTOR_H
 
-#include <memory>
-#include <utility>
+#include <ostream>
+#include <type_traits>
 
 namespace cool {
     template<typename T>

@@ -1,3 +1,7 @@
+#include <memory>
+#include <utility>
+#include <algorithm>
+
 namespace cool {
     template<typename T>
     my_vector<T>::my_vector() = default;
@@ -131,7 +135,7 @@ namespace cool {
         std::size_t n_ = 1;
         while (n_ < n)
             n_ *= 2;
-        T *new_data = reinterpret_cast<T *>(operator new(n_ * sizeof(T)));
+        T *new_data = static_cast<T *>(operator new(n_ * sizeof(T)));
         try {
             if constexpr (!std::is_nothrow_move_constructible_v<T>
                           && std::is_copy_constructible_v<T>)
@@ -139,11 +143,14 @@ namespace cool {
             else
                 std::uninitialized_move_n(data, sz, new_data);
 
+            std::destroy_n(data, sz);
+            if (data) operator delete(data);
+
             data = new_data;
             cp = n_;
         } catch (...) {
             operator delete(new_data);
-            throw;
+            std::rethrow_exception(std::current_exception());
         }
     }
 

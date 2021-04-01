@@ -12,10 +12,10 @@ private:
     typedef char no_type[2];
 
     template<typename C>
-    static yes_type &test(decltype(&C::operator==)) {};
+    static yes_type &test(decltype(&C::operator==));
 
     template<typename C>
-    static no_type &test(...) {};
+    static no_type &test(...);
 
 public:
     enum {
@@ -224,7 +224,7 @@ namespace product {
         Product(Product &&other) = delete;
 
         ~Product() {
-            delete name_;
+            delete[] name_;
         }
 
         friend std::ostream &operator<<(std::ostream &out, const Product &product) {
