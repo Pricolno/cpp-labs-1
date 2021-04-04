@@ -29,7 +29,7 @@ constexpr bool has_equality_operator_v = has_equality_operator<T>::value;
 namespace test {
     template<typename T>
     void test_my_vector_default_constructor() {
-        cool::my_vector<T> vec;
+        containers::my_vector<T> vec;
         assert(vec.size() == 0);
         assert(vec.capacity() == 0);
         assert(vec.empty());
@@ -37,7 +37,7 @@ namespace test {
 
     template<typename T>
     void test_my_vector_push_back(const std::vector<T> &defaults, bool copy) {
-        cool::my_vector<T> vec;
+        containers::my_vector<T> vec;
 
         std::size_t expected_sz = 0;
         std::size_t expected_cp = 0;
@@ -63,7 +63,7 @@ namespace test {
 
     template<typename T>
     void test_my_vector_reserve_with_args(std::size_t cp) {
-        cool::my_vector<T> vec;
+        containers::my_vector<T> vec;
         vec.reserve(cp);
 
         std::size_t expected_cp = 1;
@@ -83,7 +83,7 @@ namespace test {
 
     template<typename T>
     void test_my_vector_resize() {
-        cool::my_vector<T> vec;
+        containers::my_vector<T> vec;
 
         std::size_t sz = 10u, cp = 16u;
         vec.resize(sz);
@@ -103,8 +103,8 @@ namespace test {
     }
 
     template<typename T>
-    cool::my_vector<T> construct_my_vector(const std::vector<T> &defaults) {
-        cool::my_vector<T> vec;
+    containers::my_vector<T> construct_my_vector(const std::vector<T> &defaults) {
+        containers::my_vector<T> vec;
         for (const auto &d : defaults)
             vec.push_back(d);
         return vec;
@@ -112,7 +112,7 @@ namespace test {
 
     template<typename T>
     void test_my_vector_pop_back(const std::vector<T> &defaults) {
-        cool::my_vector<T> vec = construct_my_vector(defaults);
+        containers::my_vector<T> vec = construct_my_vector(defaults);
         std::size_t sz = vec.size();
         std::size_t cp = vec.capacity();
 
@@ -123,7 +123,7 @@ namespace test {
 
     template<typename T>
     void test_my_vector_clear(const std::vector<T> &defaults) {
-        cool::my_vector<T> vec = construct_my_vector(defaults);
+        containers::my_vector<T> vec = construct_my_vector(defaults);
         std::size_t cp = vec.capacity();
 
         vec.clear();
@@ -134,15 +134,27 @@ namespace test {
     template<typename T>
     void test_my_vector_element_default_constructor() {
         std::size_t sz = 10u, cp = 16u;
-        cool::my_vector<T> vec(sz);
+        containers::my_vector<T> vec(sz);
 
         assert(vec.size() == sz);
         assert(vec.capacity() == cp);
     }
 
     template<typename T>
+    void test_my_vector_value_initialization() {
+        containers::my_vector<T> vec(10);
+        assert(vec.size() == 10);
+        assert(vec.capacity() == 16);
+        assert(!vec.empty());
+
+        for(size_t i = 0; i < vec.size(); ++i) {
+            assert(vec[i] == T());
+        }
+    }
+
+    template<typename T>
     void test_my_vector_indexing(const std::vector<T> &defaults) {
-        cool::my_vector<T> vec = construct_my_vector(defaults);
+        containers::my_vector<T> vec = construct_my_vector(defaults);
 
         for (std::size_t i = 0; i < vec.size(); ++i)
             assert(vec[i] == defaults[i]);
@@ -150,8 +162,8 @@ namespace test {
 
     template<typename T>
     void test_my_vector_copy_assignment(const std::vector<T> &defaults) {
-        cool::my_vector<T> vec = construct_my_vector(defaults);
-        cool::my_vector<T> copy = vec;
+        containers::my_vector<T> vec = construct_my_vector(defaults);
+        containers::my_vector<T> copy = vec;
 
         for (std::size_t i = 0; i < vec.size(); ++i)
             assert(vec[i] == copy[i]);
@@ -159,9 +171,9 @@ namespace test {
 
     template<typename T>
     void test_my_vector_move_assignment(const std::vector<T> &defaults) {
-        cool::my_vector<T> vec = construct_my_vector(defaults);
-        cool::my_vector<T> copy = vec;
-        cool::my_vector<T> moved = std::move(copy);
+        containers::my_vector<T> vec = construct_my_vector(defaults);
+        containers::my_vector<T> copy = vec;
+        containers::my_vector<T> moved = std::move(copy);
 
         for (std::size_t i = 0; i < vec.size(); ++i)
             assert(moved[i] == defaults[i]);
@@ -181,6 +193,7 @@ namespace test {
     void test_my_vector_default_constructible() {
         test_my_vector_resize<T>();
         test_my_vector_element_default_constructor<T>();
+        test_my_vector_value_initialization<T>();
     }
 
     template<typename T>
@@ -238,7 +251,7 @@ namespace product {
         double price_;
     };
 
-    void print(const cool::my_vector<Product> &v) {
+    void print(const containers::my_vector<Product> &v) {
         std::cout << v << std::endl;
     }
 

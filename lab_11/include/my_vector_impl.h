@@ -2,7 +2,7 @@
 #include <utility>
 #include <algorithm>
 
-namespace cool {
+namespace containers {
     template<typename T>
     my_vector<T>::my_vector() = default;
 
@@ -121,7 +121,7 @@ namespace cool {
     void my_vector<T>::resize(std::size_t n) noexcept(std::is_nothrow_constructible_v<T>) {
         reserve(n);
         if (n > sz)
-            std::uninitialized_default_construct_n(data, n - sz);
+            std::uninitialized_value_construct(data + sz, data + n);
         else if (n < sz)
             std::destroy(data + n, data + sz);
         sz = n;
@@ -129,12 +129,12 @@ namespace cool {
 
     template<typename T>
     void my_vector<T>::reserve(std::size_t n) noexcept(std::is_nothrow_constructible_v<T>) {
-        if (n < cp)
+        std::size_t n_ = 1;
+        while (n_ < n) n_ *= 2;
+
+        if (n_ < cp)
             return;
 
-        std::size_t n_ = 1;
-        while (n_ < n)
-            n_ *= 2;
         T *new_data = static_cast<T *>(operator new(n_ * sizeof(T)));
         try {
             if constexpr (!std::is_nothrow_move_constructible_v<T>
@@ -144,7 +144,7 @@ namespace cool {
                 std::uninitialized_move_n(data, sz, new_data);
 
             std::destroy_n(data, sz);
-            if (data) operator delete(data);
+            operator delete(data);
 
             data = new_data;
             cp = n_;

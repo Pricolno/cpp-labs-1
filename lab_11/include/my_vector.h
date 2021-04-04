@@ -4,7 +4,7 @@
 #include <ostream>
 #include <type_traits>
 
-namespace cool {
+namespace containers {
     template<typename T>
     class my_vector {
     public:
