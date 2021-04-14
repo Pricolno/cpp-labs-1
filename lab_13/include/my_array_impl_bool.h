@@ -74,7 +74,7 @@ namespace lab_13 {
     template<std::size_t N>
     typename my_array<bool, N>::proxy
     my_array<bool, N>::operator[](std::size_t index) {
-        return proxy(data[index], index & 0xF);
+        return proxy(data[index / 8], index % 8);
     }
 
     template<std::size_t N>

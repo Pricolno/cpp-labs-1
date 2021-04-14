@@ -5,10 +5,10 @@
 using lab_13::my_array;
 
 int main() {
-    my_array<bool, 5> arr;
-    arr[3] = true;
-    assert(arr[3]);
-    assert(arr.size() == 5);
+    my_array<bool, 11> arr;
+    arr[10] = true;
+    assert(arr[10]);
+    assert(arr.size() == 11);
     assert(!arr.empty());
 
     return 0;
