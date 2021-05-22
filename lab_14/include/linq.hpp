@@ -19,12 +19,13 @@ namespace linq {
             // To save one increment at the end
             // I had to write this awful conditional shit
             std::optional<T> next() {
+                if (current == last)
+                    return std::nullopt;
                 if (first_call) {
                     first_call = false;
                     return *current;
                 }
-                if (current != last)
-                    ++current;
+                ++current;
                 if (current != last)
                     return *current;
                 return std::nullopt;
