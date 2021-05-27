@@ -232,6 +232,16 @@ TEST_SUITE("until") {
         REQUIRE((ss >> remaining));
         CHECK(remaining == 5);
     }
+
+    TEST_CASE("filatov's test") {
+        auto xs = std::vector<int>{10, 20, 30};
+        auto res = linq::from(xs.begin(), xs.end()).until([](int x) {
+            CAPTURE(x);
+            CHECK((x == 10 || x == 20 || x == 30));
+            return false;
+        }).to_vector();
+        CHECK((std::vector<int>{10, 20, 30}) == res);
+    }
 }
 
 TEST_SUITE("where") {

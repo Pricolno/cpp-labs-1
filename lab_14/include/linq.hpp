@@ -100,7 +100,7 @@ namespace linq {
                 if (stopped)
                     return std::nullopt;
                 std::optional<T> value = prev.next();
-                if (predicate(*value)) {
+                if (value && predicate(*value)) {
                     stopped = true;
                     return std::nullopt;
                 }
